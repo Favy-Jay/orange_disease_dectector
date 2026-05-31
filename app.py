@@ -1,5 +1,6 @@
 import streamlit as st
-import streamlit.components.v1 as components  # <-- Added for JS auto-scroll
+import streamlit.components.v1 as components
+import time
 from PIL import Image, ImageOps
 from ultralytics import YOLO
 from google import genai
@@ -80,18 +81,19 @@ st.markdown("""
         pointer-events: none;
     }
 
-    /* ---> MOBILE OPTIMIZATION: Force the 4 sample columns to stay in a single row <--- */
+    /* ---> MOBILE OPTIMIZATION: Force the 4 sample columns to stay in a single row with tighter spacing <--- */
     @media (max-width: 576px) {
         div[data-testid="column"] {
             width: 25% !important;
             flex: 1 1 25% !important;
             min-width: 25% !important;
-            padding: 0 0.2rem !important;
+            padding: 0 0.1rem !important;
         }
         div.stButton > button {
-            font-size: 0.6rem !important;
-            padding: 0.2rem 0.1rem !important;
-            min-height: 2rem !important;
+            font-size: 0.5rem !important;
+            padding: 0.1rem 0 !important;
+            min-height: 1.5rem !important;
+            width: 100% !important;
         }
         .sample-title {
             margin-top: 1rem;
@@ -145,7 +147,6 @@ def render_sample_card(column, file_name, display_name):
     with column:
         try:
             raw_img = Image.open(file_name)
-            # Hard-forces any aspect ratio into a clean square thumbnail
             square_thumb = ImageOps.fit(raw_img, (190, 190), Image.Resampling.LANCZOS)
             st.image(square_thumb, use_container_width=True)
             if st.button(display_name, key=f"btn_{display_name.lower()}"):
@@ -162,7 +163,6 @@ render_sample_card(col4, "images/sample_melanose.jpg", "Melanose")
 # 6. Primary Input Routing Queue
 final_input_image = None
 
-# Custom user upload completely overrides selected samples
 if uploaded_file is not None:
     final_input_image = Image.open(uploaded_file)
     st.session_state.active_image = None
@@ -203,12 +203,17 @@ def get_agricultural_remedy(disease_name):
 if final_input_image is not None:
     st.write("---")
     
+    # Generate a unique rendering key to force JS execution on every single run/upload
+    render_key = str(int(time.time() * 1000))
+    
     # ---> SCROLL TARGET 1: Auto-Scroll to Detection Section <---
-    st.markdown('<div id="detection-target"></div>', unsafe_allow_html=True)
-    components.html("""
+    st.markdown(f'<div id="detection-target-{render_key}"></div>', unsafe_allow_html=True)
+    components.html(f"""
         <script>
-            var target = window.parent.document.getElementById('detection-target');
-            if (target) { target.scrollIntoView({behavior: 'smooth', block: 'start'}); }
+            setTimeout(function() {{
+                var target = window.parent.document.getElementById('detection-target-{render_key}');
+                if (target) {{ target.scrollIntoView({{behavior: 'smooth', block: 'start'}}); }}
+            }}, 100);
         </script>
     """, height=0)
 
@@ -225,14 +230,15 @@ if final_input_image is not None:
     st.write("---")
     
     # ---> SCROLL TARGET 2: Auto-Scroll to Remedy Section <---
-    st.markdown('<div id="remedy-target"></div>', unsafe_allow_html=True)
+    st.markdown(f'<div id="remedy-target-{render_key}"></div>', unsafe_allow_html=True)
     st.write("### 📋 Diagnostic & Remedy Matrix Summary")
     
-    # Execute the scroll immediately before querying Gemini so the user watches the remedies generate
-    components.html("""
+    components.html(f"""
         <script>
-            var target = window.parent.document.getElementById('remedy-target');
-            if (target) { target.scrollIntoView({behavior: 'smooth', block: 'start'}); }
+            setTimeout(function() {{
+                var target = window.parent.document.getElementById('remedy-target-{render_key}');
+                if (target) {{ target.scrollIntoView({{behavior: 'smooth', block: 'start'}}); }}
+            }}, 150);
         </script>
     """, height=0)
     
