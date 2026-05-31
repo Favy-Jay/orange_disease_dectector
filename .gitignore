@@ -1,0 +1,15 @@
+# Sensitive API Keys
+.streamlit/secrets.toml
+.env
+*.env
+
+# Python compilation cache
+__pycache__/
+*.pyc
+.venv/
+venv/
+env/
+
+# OS-specific hidden files
+.DS_Store
+Thumbs.db
