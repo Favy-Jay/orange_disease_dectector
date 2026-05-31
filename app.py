@@ -1,4 +1,5 @@
 import streamlit as st
+import streamlit.components.v1 as components  # <-- Added for JS auto-scroll
 from PIL import Image, ImageOps
 from ultralytics import YOLO
 from google import genai
@@ -78,6 +79,24 @@ st.markdown("""
         line-height: 1.2;
         pointer-events: none;
     }
+
+    /* ---> MOBILE OPTIMIZATION: Force the 4 sample columns to stay in a single row <--- */
+    @media (max-width: 576px) {
+        div[data-testid="column"] {
+            width: 25% !important;
+            flex: 1 1 25% !important;
+            min-width: 25% !important;
+            padding: 0 0.2rem !important;
+        }
+        div.stButton > button {
+            font-size: 0.6rem !important;
+            padding: 0.2rem 0.1rem !important;
+            min-height: 2rem !important;
+        }
+        .sample-title {
+            margin-top: 1rem;
+        }
+    }
     </style>
 """, unsafe_allow_html=True)
 
@@ -128,7 +147,7 @@ def render_sample_card(column, file_name, display_name):
             raw_img = Image.open(file_name)
             # Hard-forces any aspect ratio into a clean square thumbnail
             square_thumb = ImageOps.fit(raw_img, (190, 190), Image.Resampling.LANCZOS)
-            st.image(square_thumb, width=150)
+            st.image(square_thumb, use_container_width=True)
             if st.button(display_name, key=f"btn_{display_name.lower()}"):
                 st.session_state.active_image = file_name
                 st.session_state.sample_label = f"{display_name} Sample Profile"
@@ -183,6 +202,16 @@ def get_agricultural_remedy(disease_name):
 # 8. Evaluation & Execution Engine Output
 if final_input_image is not None:
     st.write("---")
+    
+    # ---> SCROLL TARGET 1: Auto-Scroll to Detection Section <---
+    st.markdown('<div id="detection-target"></div>', unsafe_allow_html=True)
+    components.html("""
+        <script>
+            var target = window.parent.document.getElementById('detection-target');
+            if (target) { target.scrollIntoView({behavior: 'smooth', block: 'start'}); }
+        </script>
+    """, height=0)
+
     if st.session_state.sample_label:
         st.caption(f"🚀 Active Session: Running **{st.session_state.sample_label}**")
         
@@ -194,7 +223,18 @@ if final_input_image is not None:
     st.image(annotated_image, use_container_width=True)
     
     st.write("---")
+    
+    # ---> SCROLL TARGET 2: Auto-Scroll to Remedy Section <---
+    st.markdown('<div id="remedy-target"></div>', unsafe_allow_html=True)
     st.write("### 📋 Diagnostic & Remedy Matrix Summary")
+    
+    # Execute the scroll immediately before querying Gemini so the user watches the remedies generate
+    components.html("""
+        <script>
+            var target = window.parent.document.getElementById('remedy-target');
+            if (target) { target.scrollIntoView({behavior: 'smooth', block: 'start'}); }
+        </script>
+    """, height=0)
     
     detected_boxes = results[0].boxes
     
