@@ -169,7 +169,7 @@ st.markdown('<div class="favy-header">Favy Jay <span>| System Architecture</span
 
 # Hero Section
 st.markdown('<div class="hero-title">Citrus Pathology AI</div>', unsafe_allow_html=True)
-st.markdown('<div class="hero-subtitle">Upload a leaf or fruit scan for instant computer vision diagnostics and agronomist treatment plans.</div>', unsafe_allow_html=True)
+st.markdown('<div class="hero-subtitle">Upload a fruit image for instant computer vision diagnostics and agronomist treatment plans.</div>', unsafe_allow_html=True)
 
 # Config Sidebar
 with st.sidebar:
