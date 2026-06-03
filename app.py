@@ -1,18 +1,3 @@
-# ==========================================
-# 🔥 ULTIMATE OPENCV CLOUD AUTO-FIXER 🔥
-# ==========================================
-import sys
-import subprocess
-try:
-    import cv2
-except ImportError:
-    # If the server installed the broken desktop OpenCV, this forcefully replaces it with the headless version at runtime!
-    subprocess.call([sys.executable, "-m", "pip", "uninstall", "-y", "opencv-python"])
-    subprocess.call([sys.executable, "-m", "pip", "uninstall", "-y", "opencv-python-headless"])
-    subprocess.call([sys.executable, "-m", "pip", "install", "opencv-python-headless"])
-    if "cv2" in sys.modules:
-        del sys.modules["cv2"]
-
 import streamlit as st
 import streamlit.components.v1 as components
 import time
