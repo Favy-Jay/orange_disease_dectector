@@ -1,7 +1,30 @@
+# ==========================================
+# 🔥 STREAMLIT CLOUD PERMISSION BYPASS 🔥
+# ==========================================
+import os
+import sys
+import subprocess
+
+# Streamlit locks down normal installations, but leaves the /tmp/ folder wide open.
+# We create a secret folder and install the server-safe OpenCV directly into it at runtime.
+bypass_dir = "/tmp/headless_cv2"
+if not os.path.exists(bypass_dir):
+    os.makedirs(bypass_dir, exist_ok=True)
+    subprocess.call([sys.executable, "-m", "pip", "install", "opencv-python-headless", "--target", bypass_dir, "--quiet"])
+
+# Force Python to look in our secret folder FIRST before checking Streamlit's broken system
+if bypass_dir not in sys.path:
+    sys.path.insert(0, bypass_dir)
+
+# Pre-load the safe driver so YOLO is tricked into using it
+import cv2
+
+# ==========================================
+# STANDARD APP IMPORTS & LOGIC
+# ==========================================
 import streamlit as st
 import streamlit.components.v1 as components
 import time
-import os
 from PIL import Image, ImageOps
 from ultralytics import YOLO
 from google import genai
@@ -92,7 +115,7 @@ st.markdown("""
         color: #0066fe !important;
     }
 
-    /* Premium Reset Button Base Settings (Kept independent) */
+    /* Premium Reset Button Base Settings */
     .reset-btn-container div.stButton > button {
         background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%) !important;
         color: #0284c7 !important;
@@ -115,7 +138,7 @@ st.markdown("""
         box-shadow: 0 6px 12px rgba(14, 165, 233, 0.25) !important; 
     }
 
-    /* 📱 MOBILE OPTIMIZATIONS (Restored exactly to your initial code) */
+    /* 📱 MOBILE OPTIMIZATIONS */
     @media (max-width: 576px) {
         .favy-header { left: 3.5rem; font-size: 1rem; top: 0.9rem; }
         .hero-title { font-size: 2rem; margin-top: 1rem; }
@@ -165,7 +188,7 @@ except Exception as e:
 # ==========================================
 
 # Inject the Brand Text
-st.markdown('<div class="favy-header">Favy Jay <span>| System Architecture</span></div>', unsafe_allow_html=True)
+st.markdown('<div class="favy-header">Favy Jay <span> </span></div>', unsafe_allow_html=True)
 
 # Hero Section
 st.markdown('<div class="hero-title">Citrus Pathology AI</div>', unsafe_allow_html=True)
@@ -204,7 +227,6 @@ with tab1:
 with tab2:
     st.markdown("<br>", unsafe_allow_html=True)
     
-    # Restored to exact initial 4-column layout
     col1, col2, col3, col4 = st.columns(4)
     
     def render_sample_card(column, file_name, display_name):
@@ -219,7 +241,6 @@ with tab2:
             
             st.image(square_thumb, use_container_width=True)
             
-            # Button restored to its exact initial behavior (below image, visible)
             if st.button(display_name, key=f"btn_{display_name.lower()}", disabled=not file_exists):
                 st.session_state.active_image = file_name
                 st.session_state.sample_label = f"{display_name} Sample Profile"
@@ -263,7 +284,6 @@ def get_agricultural_remedy(disease_name):
 # 5. INFERENCE & RESULTS DASHBOARD
 # ==========================================
 if final_input_image is not None:
-    # Set the precise anchor right above the results
     render_key = str(int(time.time() * 1000))
     st.markdown(f'<div id="results-target-{render_key}"></div>', unsafe_allow_html=True)
     
@@ -324,7 +344,6 @@ if final_input_image is not None:
 # ==========================================
 components.html("""
     <script>
-        // 1. Create the button if it doesn't exist
         let btn = window.parent.document.getElementById('favy-btt-btn');
         if (!btn) {
             btn = window.parent.document.createElement('button');
@@ -339,20 +358,15 @@ components.html("""
             window.parent.document.body.appendChild(btn);
         }
         
-        // 2. ALWAYS RE-BIND THE CLICK EVENT on every model run to prevent stale references
         btn.onclick = () => {
-            // Target 1: Streamlit's specific internal view container
             const viewContainer = window.parent.document.querySelector('[data-testid="stAppViewContainer"]');
             if (viewContainer) { viewContainer.scrollTo({top: 0, behavior: 'smooth'}); }
             
-            // Target 2: The classic main container
             const mainContainer = window.parent.document.querySelector('.main');
             if (mainContainer) { mainContainer.scrollTo({top: 0, behavior: 'smooth'}); }
             
-            // Target 3: Global Window Fallback
             window.parent.scrollTo({top: 0, behavior: 'smooth'});
             
-            // Target 4: Magnetically pull to the top anchor
             const topAnchor = window.parent.document.getElementById('top-anchor');
             if (topAnchor) { topAnchor.scrollIntoView({behavior: 'smooth', block: 'start'}); }
         };
