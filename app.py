@@ -197,7 +197,7 @@ st.markdown('<div class="hero-subtitle">Upload a fruit image for instant compute
 # Config Sidebar
 with st.sidebar:
     st.markdown("### ⚙️ System Controls")
-    conf_threshold = st.slider("Confidence Score Threshold", 0.05, 1.00, 0.25, 0.05)
+    conf_threshold = st.slider("Confidence Score Threshold", 0.05, 1.00, 0.49, 0.01)
     
     st.markdown("---")
     st.info("""
