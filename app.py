@@ -1,6 +1,3 @@
-# ==========================================
-# 🔥 STREAMLIT CLOUD PERMISSION BYPASS 🔥
-# ==========================================
 import os
 import sys
 import subprocess
@@ -19,9 +16,6 @@ if bypass_dir not in sys.path:
 # Pre-load the safe driver so YOLO is tricked into using it
 import cv2
 
-# ==========================================
-# STANDARD APP IMPORTS & LOGIC
-# ==========================================
 import streamlit as st
 import streamlit.components.v1 as components
 import time
@@ -29,9 +23,7 @@ from PIL import Image, ImageOps
 from ultralytics import YOLO
 from google import genai
 
-# ==========================================
-# 1. PAGE ARCHITECTURE & THEME
-# ==========================================
+
 st.set_page_config(
     page_title="Citrus Pathology System", 
     page_icon="🍊",
@@ -98,9 +90,6 @@ st.markdown("""
         padding: 0.5rem 2rem !important; margin-top: 1rem;
     }
 
-    /* ========================================================
-       🔥 INITIAL BUTTON & IMAGE LAYOUT (Restored)
-       ======================================================== */
     div[data-testid="stTabs"] div.stButton > button {
         border-radius: 20px !important;
         font-size: 0.8rem !important;
@@ -160,9 +149,6 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# ==========================================
-# 2. STATE & MODEL INITIALIZATION
-# ==========================================
 if "active_image" not in st.session_state: st.session_state.active_image = None
 if "sample_label" not in st.session_state: st.session_state.sample_label = None
 if "uploader_key" not in st.session_state: st.session_state.uploader_key = 0 
@@ -182,10 +168,6 @@ try:
 except Exception as e:
     st.error("Critical Error: Could not load model weights (best.pt).")
     st.stop()
-
-# ==========================================
-# 3. HEADER, SIDEBAR & INPUT ROUTING
-# ==========================================
 
 # Inject the Brand Text
 st.markdown('<div class="favy-header">Favy Jay <span> </span></div>', unsafe_allow_html=True)
@@ -262,9 +244,6 @@ if uploaded_file is not None:
 elif st.session_state.active_image is not None:
     final_input_image = Image.open(st.session_state.active_image)
 
-# ==========================================
-# 4. EXPERT COGNITIVE ENGINE
-# ==========================================
 def get_agricultural_remedy(disease_name):
     if not client: return "⚠️ API Key missing."
     prompt = f"""
@@ -280,9 +259,7 @@ def get_agricultural_remedy(disease_name):
         return response.text
     except Exception as e: return f"❌ API Error: {e}"
 
-# ==========================================
-# 5. INFERENCE & RESULTS DASHBOARD
-# ==========================================
+
 if final_input_image is not None:
     render_key = str(int(time.time() * 1000))
     st.markdown(f'<div id="results-target-{render_key}"></div>', unsafe_allow_html=True)
@@ -339,9 +316,6 @@ if final_input_image is not None:
         </script>
     """, height=0)
 
-# ==========================================
-# 6. FLOATING 'BACK TO TOP' BUTTON INJECTION
-# ==========================================
 components.html("""
     <script>
         let btn = window.parent.document.getElementById('favy-btt-btn');
